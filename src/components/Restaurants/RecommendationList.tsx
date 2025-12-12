@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { RefreshCw, Mic } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
@@ -19,6 +20,9 @@ export function RecommendationList({
   onRefine,
   onStartOver,
 }: RecommendationListProps) {
+  const [visibleCards, setVisibleCards] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const filteredRecommendations = useQuery(
     api.restaurants.getRecommendations,
     preferenceId ? { preferenceId: preferenceId as Id<"preferences"> } : "skip"
@@ -31,11 +35,28 @@ export function RecommendationList({
 
   const recommendations = preferenceId ? filteredRecommendations : allRestaurants;
 
-  if (recommendations === undefined) {
+  useEffect(() => {
+    if (recommendations && recommendations.length > 0) {
+      setVisibleCards([]);
+      setIsLoading(true);
+      const loadingTimer = setTimeout(() => {
+        setIsLoading(false);
+        recommendations.forEach((_, index) => {
+          setTimeout(() => {
+            setVisibleCards((prev) => [...prev, index]);
+          }, index * 150);
+        });
+      }, 800);
+      return () => clearTimeout(loadingTimer);
+    }
+  }, [recommendations]);
+
+  if (recommendations === undefined || isLoading) {
     return (
       <div className="bg-gradient-card rounded-xl shadow-card border border-slate-200 p-8">
-        <div className="flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-3">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-500" />
+          <p className="text-sm text-slate-500">Finding the perfect spots for you...</p>
         </div>
       </div>
     );
@@ -64,12 +85,20 @@ export function RecommendationList({
 
       <div className="space-y-4 mb-6">
         {recommendations.map((restaurant: Restaurant, index: number) => (
-          <RestaurantCard
+          <div
             key={restaurant._id}
-            restaurant={restaurant}
-            rank={index + 1}
-            onSelect={() => onSelectRestaurant(restaurant)}
-          />
+            className={`transform transition-all duration-500 ease-out ${
+              visibleCards.includes(index)
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
+          >
+            <RestaurantCard
+              restaurant={restaurant}
+              rank={index + 1}
+              onSelect={() => onSelectRestaurant(restaurant)}
+            />
+          </div>
         ))}
       </div>
 
