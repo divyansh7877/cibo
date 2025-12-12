@@ -1,4 +1,4 @@
-import { Mic, MicOff, Loader2, UtensilsCrossed } from "lucide-react";
+import { Mic, MicOff, Loader2, Search } from "lucide-react";
 import { cn } from "../../lib/utils";
 import type { VoiceState } from "../../types";
 
@@ -21,47 +21,55 @@ export function ActionBar({ voiceState, onToggleVoice, onBrowse, error }: Action
             <p className="text-sm text-rose-600 text-center">{error}</p>
           </div>
         )}
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-200/80 p-3 flex items-center gap-3">
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-200/80 p-3 flex items-center gap-4">
           <button
-            onClick={onBrowse}
-            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 transition-all duration-200 ease-in-out group"
+            onClick={onToggleVoice}
+            disabled={isProcessing}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl transition-all duration-200 ease-in-out",
+              isListening
+                ? "bg-rose-100 text-rose-700 hover:bg-rose-200"
+                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+            )}
           >
-            <UtensilsCrossed className="w-5 h-5 text-slate-600 group-hover:text-slate-800 transition-colors" />
-            <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Browse</span>
+            {isListening ? (
+              <>
+                <MicOff className="w-5 h-5" />
+                <span className="text-sm font-medium">Mute</span>
+              </>
+            ) : (
+              <>
+                <Mic className="w-5 h-5" />
+                <span className="text-sm font-medium">Speak</span>
+              </>
+            )}
           </button>
 
-          <div className="relative">
+          <div className="relative shrink-0">
             {isListening && (
               <div className="absolute inset-0 rounded-full bg-rose-400 animate-ping opacity-30" />
             )}
-            <button
-              onClick={onToggleVoice}
-              disabled={isProcessing}
+            <div
               className={cn(
-                "relative w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2",
-                voiceState === "idle" && "bg-gradient-accent hover:scale-105 focus:ring-accent-500",
-                isListening && "bg-rose-500 hover:bg-rose-600 scale-110 focus:ring-rose-500",
-                isProcessing && "bg-slate-400 cursor-not-allowed"
+                "relative w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-200",
+                voiceState === "idle" && "bg-gradient-accent",
+                isListening && "bg-rose-500 scale-110",
+                isProcessing && "bg-slate-400"
               )}
             >
-              {voiceState === "idle" && <Mic className="w-7 h-7 text-white" />}
-              {isListening && <MicOff className="w-7 h-7 text-white" />}
-              {isProcessing && <Loader2 className="w-7 h-7 text-white animate-spin" />}
-            </button>
+              {voiceState === "idle" && <Mic className="w-6 h-6 text-white" />}
+              {isListening && <Mic className="w-6 h-6 text-white animate-pulse" />}
+              {isProcessing && <Loader2 className="w-6 h-6 text-white animate-spin" />}
+            </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center">
-            <span className={cn(
-              "text-sm font-medium text-center transition-colors duration-200",
-              voiceState === "idle" && "text-slate-500",
-              isListening && "text-rose-600",
-              isProcessing && "text-slate-400"
-            )}>
-              {voiceState === "idle" && "Tap to speak"}
-              {isListening && "Listening..."}
-              {isProcessing && "Processing..."}
-            </span>
-          </div>
+          <button
+            onClick={onBrowse}
+            className="flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all duration-200 ease-in-out"
+          >
+            <Search className="w-5 h-5" />
+            <span className="text-sm font-medium">Results</span>
+          </button>
         </div>
       </div>
       <div className="h-safe-area-inset-bottom bg-gradient-to-t from-white/80 to-transparent" />
