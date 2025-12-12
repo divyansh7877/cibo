@@ -6,12 +6,10 @@ import { AgentStatusPanel } from "./AgentStatusPanel";
 import { ConversationPanel } from "./ConversationPanel";
 import { VoiceButton } from "../Voice/VoiceButton";
 import { RecommendationList } from "../Restaurants/RecommendationList";
-import { CallInProgress } from "../Order/CallInProgress";
-import { OrderConfirmation } from "../Order/OrderConfirmation";
+import { MockOrderScreen } from "../Order/MockOrderScreen";
 import { Button } from "../ui/Button";
 import { useUserSync } from "../../hooks/useUserSync";
 import { useVoiceAgent } from "../../hooks/useVoiceAgent";
-import { useOrderCall } from "../../hooks/useOrderCall";
 import { generateSessionId } from "../../lib/utils";
 import type { Phase, Restaurant } from "../../types";
 
@@ -22,7 +20,6 @@ export function Dashboard() {
   const [sessionId, setSessionId] = useState(() => generateSessionId());
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
-  const [orderId, setOrderId] = useState<string | null>(null);
 
   const handlePreferencesComplete = useCallback((prefId: string) => {
     setPreferenceId(prefId);
@@ -35,24 +32,9 @@ export function Dashboard() {
     onPreferencesComplete: handlePreferencesComplete,
   });
 
-  const { initiateCall, isInitiating } = useOrderCall();
-
-  const handleSelectRestaurant = async (restaurant: Restaurant) => {
-    if (!userId) return;
+  const handleSelectRestaurant = (restaurant: Restaurant) => {
     setSelectedRestaurant(restaurant);
     setPhase("ordering");
-    try {
-      const result = await initiateCall({
-        restaurant,
-        orderItems: restaurant.menuHighlights.slice(0, 2),
-        customerName: user?.fullName || user?.firstName || "Customer",
-        userId,
-        preferenceId: preferenceId || undefined,
-      });
-      setOrderId(result.orderId);
-    } catch {
-      setPhase("discovery");
-    }
   };
 
   const handleNewOrder = () => {
@@ -60,7 +42,6 @@ export function Dashboard() {
     setSessionId(generateSessionId());
     setPreferenceId(null);
     setSelectedRestaurant(null);
-    setOrderId(null);
   };
 
   if (isUserLoading) {
@@ -87,14 +68,13 @@ export function Dashboard() {
         {phase === "discovery" && (
           <RecommendationList preferenceId={preferenceId} onSelectRestaurant={handleSelectRestaurant} onRefine={() => setPhase("preference")} onStartOver={handleNewOrder} />
         )}
-        {phase === "ordering" && selectedRestaurant && orderId && (
-          <CallInProgress restaurant={selectedRestaurant} orderId={orderId} onComplete={() => setPhase("complete")} onCancel={() => { setPhase("discovery"); setOrderId(null); }} />
-        )}
-        {phase === "ordering" && isInitiating && (
-          <div className="flex items-center justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" /><span className="ml-3 text-gray-600">Initiating call...</span></div>
-        )}
-        {phase === "complete" && orderId && (
-          <OrderConfirmation orderId={orderId} onNewOrder={handleNewOrder} />
+        {(phase === "ordering" || phase === "complete") && selectedRestaurant && (
+          <MockOrderScreen
+            restaurant={selectedRestaurant}
+            customerName={user?.fullName || user?.firstName || "Customer"}
+            onComplete={() => setPhase("complete")}
+            onNewOrder={handleNewOrder}
+          />
         )}
       </main>
     </div>
