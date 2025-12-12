@@ -1,13 +1,11 @@
 import { useState, useCallback } from "react";
 import { useUser } from "@clerk/clerk-react";
-import { UtensilsCrossed } from "lucide-react";
 import { Header } from "../Layout/Header";
 import { AgentStatusPanel } from "./AgentStatusPanel";
 import { ConversationPanel } from "./ConversationPanel";
-import { VoiceButton } from "../Voice/VoiceButton";
+import { ActionBar } from "../Voice/ActionBar";
 import { RecommendationList } from "../Restaurants/RecommendationList";
 import { MockOrderScreen } from "../Order/MockOrderScreen";
-import { Button } from "../ui/Button";
 import { useUserSync } from "../../hooks/useUserSync";
 import { useVoiceAgent } from "../../hooks/useVoiceAgent";
 import { generateSessionId } from "../../lib/utils";
@@ -56,13 +54,13 @@ export function Dashboard() {
         {phase === "preference" && (
           <>
             <ConversationPanel messages={transcript} />
-            <VoiceButton voiceState={voiceState} onToggle={toggleConversation} error={error} />
-            <div className="mt-6 flex justify-center">
-              <Button variant="secondary" onClick={() => setPhase("discovery")}>
-                <UtensilsCrossed className="w-4 h-4 mr-2" />
-                Browse Restaurants
-              </Button>
-            </div>
+            <div className="pb-32" />
+            <ActionBar
+              voiceState={voiceState}
+              onToggleVoice={toggleConversation}
+              onBrowse={() => setPhase("discovery")}
+              error={error}
+            />
           </>
         )}
         {phase === "discovery" && (
