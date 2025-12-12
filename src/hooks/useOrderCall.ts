@@ -10,7 +10,7 @@ interface OrderCallParams {
   orderItems: string[];
   customerName: string;
   userId: string;
-  preferenceId: string;
+  preferenceId?: string;
 }
 
 export function useOrderCall() {
@@ -27,7 +27,7 @@ export function useOrderCall() {
       const orderId = await createOrder({
         userId: userId as Id<"users">,
         restaurantId: restaurant._id as Id<"restaurants">,
-        preferenceId: preferenceId as Id<"preferences">,
+        preferenceId: preferenceId ? (preferenceId as Id<"preferences">) : undefined,
       });
       await updateOrderStatus({ orderId, status: "calling" });
       const response = await initiateOrderCall({

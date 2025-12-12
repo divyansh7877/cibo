@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useUser } from "@clerk/clerk-react";
+import { UtensilsCrossed } from "lucide-react";
 import { Header } from "../Layout/Header";
 import { AgentStatusPanel } from "./AgentStatusPanel";
 import { ConversationPanel } from "./ConversationPanel";
@@ -7,6 +8,7 @@ import { VoiceButton } from "../Voice/VoiceButton";
 import { RecommendationList } from "../Restaurants/RecommendationList";
 import { CallInProgress } from "../Order/CallInProgress";
 import { OrderConfirmation } from "../Order/OrderConfirmation";
+import { Button } from "../ui/Button";
 import { useUserSync } from "../../hooks/useUserSync";
 import { useVoiceAgent } from "../../hooks/useVoiceAgent";
 import { useOrderCall } from "../../hooks/useOrderCall";
@@ -36,7 +38,7 @@ export function Dashboard() {
   const { initiateCall, isInitiating } = useOrderCall();
 
   const handleSelectRestaurant = async (restaurant: Restaurant) => {
-    if (!userId || !preferenceId) return;
+    if (!userId) return;
     setSelectedRestaurant(restaurant);
     setPhase("ordering");
     try {
@@ -45,7 +47,7 @@ export function Dashboard() {
         orderItems: restaurant.menuHighlights.slice(0, 2),
         customerName: user?.fullName || user?.firstName || "Customer",
         userId,
-        preferenceId,
+        preferenceId: preferenceId || undefined,
       });
       setOrderId(result.orderId);
     } catch {
@@ -74,9 +76,15 @@ export function Dashboard() {
           <>
             <ConversationPanel messages={transcript} />
             <VoiceButton voiceState={voiceState} onToggle={toggleConversation} error={error} />
+            <div className="mt-6 flex justify-center">
+              <Button variant="secondary" onClick={() => setPhase("discovery")}>
+                <UtensilsCrossed className="w-4 h-4 mr-2" />
+                Browse Restaurants
+              </Button>
+            </div>
           </>
         )}
-        {phase === "discovery" && preferenceId && (
+        {phase === "discovery" && (
           <RecommendationList preferenceId={preferenceId} onSelectRestaurant={handleSelectRestaurant} onRefine={() => setPhase("preference")} onStartOver={handleNewOrder} />
         )}
         {phase === "ordering" && selectedRestaurant && orderId && (

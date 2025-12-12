@@ -1,6 +1,13 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
+export const getAllRestaurants = query({
+  handler: async (ctx) => {
+    const restaurants = await ctx.db.query("restaurants").collect();
+    return restaurants.sort((a, b) => b.rating - a.rating);
+  },
+});
+
 export const getRecommendations = query({
   args: { preferenceId: v.id("preferences") },
   handler: async (ctx, args) => {

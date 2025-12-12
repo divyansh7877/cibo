@@ -39,7 +39,7 @@ export default defineSchema({
   orders: defineTable({
     userId: v.id("users"),
     restaurantId: v.id("restaurants"),
-    preferenceId: v.id("preferences"),
+    preferenceId: v.optional(v.id("preferences")),
     items: v.array(v.object({
       name: v.string(),
       price: v.number(),
