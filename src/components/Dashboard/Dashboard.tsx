@@ -47,34 +47,35 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-warm flex flex-col">
+    <div className="h-screen bg-gradient-warm flex flex-col overflow-hidden">
       <Header />
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8">
-        <AgentStatusPanel currentPhase={phase} />
-        {phase === "preference" && (
-          <>
-            <ConversationPanel messages={transcript} />
-            <div className="pb-32" />
-            <ActionBar
-              voiceState={voiceState}
-              onToggleVoice={toggleConversation}
-              onBrowse={() => setPhase("discovery")}
-              error={error}
-            />
-          </>
-        )}
-        {phase === "discovery" && (
-          <RecommendationList preferenceId={preferenceId} onSelectRestaurant={handleSelectRestaurant} onRefine={() => setPhase("preference")} onStartOver={handleNewOrder} />
-        )}
-        {(phase === "ordering" || phase === "complete") && selectedRestaurant && (
-          <MockOrderScreen
-            restaurant={selectedRestaurant}
-            customerName={user?.fullName || user?.firstName || "Customer"}
-            onComplete={() => setPhase("complete")}
-            onNewOrder={handleNewOrder}
+      {phase === "preference" ? (
+        <main className="flex-1 flex flex-col max-w-4xl w-full mx-auto px-4 py-4 sm:py-6 min-h-0">
+          <AgentStatusPanel currentPhase={phase} />
+          <ConversationPanel messages={transcript} />
+          <ActionBar
+            voiceState={voiceState}
+            onToggleVoice={toggleConversation}
+            onBrowse={() => setPhase("discovery")}
+            error={error}
           />
-        )}
-      </main>
+        </main>
+      ) : (
+        <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-4 sm:py-6 overflow-y-auto">
+          <AgentStatusPanel currentPhase={phase} />
+          {phase === "discovery" && (
+            <RecommendationList preferenceId={preferenceId} onSelectRestaurant={handleSelectRestaurant} onRefine={() => setPhase("preference")} onStartOver={handleNewOrder} />
+          )}
+          {(phase === "ordering" || phase === "complete") && selectedRestaurant && (
+            <MockOrderScreen
+              restaurant={selectedRestaurant}
+              customerName={user?.fullName || user?.firstName || "Customer"}
+              onComplete={() => setPhase("complete")}
+              onNewOrder={handleNewOrder}
+            />
+          )}
+        </main>
+      )}
     </div>
   );
 }
