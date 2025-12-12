@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { getAgentId, type SavePreferencesParams } from "../lib/elevenlabs";
 import type { Message, VoiceState } from "../types";
 
@@ -21,7 +22,7 @@ export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseV
   const addTranscriptMessage = useCallback((role: string, content: string) => {
     const message: Message = { role, content, timestamp: Date.now() };
     setTranscript((prev) => [...prev, message]);
-    if (userId) addMessage({ sessionId, userId, role, content });
+    if (userId) addMessage({ sessionId, userId: userId as Id<"users">, role, content });
   }, [sessionId, userId, addMessage]);
 
   const startConversation = useCallback(async () => {
@@ -39,7 +40,11 @@ export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseV
         onMessage: (msg: any) => addTranscriptMessage(msg.role, msg.content),
         onToolCall: async (toolName: string, params: any) => {
           if (toolName === "save_preferences") {
-            const preferenceId = await savePreferences({ userId, sessionId, preferences: params as SavePreferencesParams });
+            const preferenceId = await savePreferences({
+              userId: userId as Id<"users">,
+              sessionId,
+              preferences: params as SavePreferencesParams,
+            });
             onPreferencesComplete(String(preferenceId));
             return { preferenceId };
           }
