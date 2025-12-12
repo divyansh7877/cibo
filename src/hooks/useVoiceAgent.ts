@@ -33,6 +33,10 @@ export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseV
     try {
       setVoiceState("processing");
       setError(null);
+      console.log("Requesting microphone access...");
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log("Microphone access granted, starting ElevenLabs session...");
+      console.log("Agent ID:", agentId);
       const conversation = await Conversation.startSession({
         agentId,
         connectionType: "websocket",
@@ -73,7 +77,13 @@ export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseV
       conversationRef.current = conversation;
       setVoiceState("listening");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to start conversation");
+      console.error("Failed to start conversation:", err);
+      const message = err instanceof Error ? err.message : "Failed to start conversation";
+      if (message.includes("Permission denied") || message.includes("NotAllowedError")) {
+        setError("Microphone access denied. Please allow microphone access and try again.");
+      } else {
+        setError(message);
+      }
       setVoiceState("idle");
     }
   }, [userId, sessionId, addTranscriptMessage, savePreferences, onPreferencesComplete]);
