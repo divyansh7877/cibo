@@ -13,7 +13,7 @@ export function AuthScreen() {
                 <UtensilsCrossed className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">FoodAgent</h1>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">Cibo</h1>
             <p className="text-lg text-slate-600 mb-8 leading-relaxed">
               Tell me what you're craving.<br />I'll find it and order it.
             </p>

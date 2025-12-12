@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { RefreshCw, Mic } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { RestaurantCard } from "./RestaurantCard";
 import { Button } from "../ui/Button";
 import type { Restaurant } from "../../types";
@@ -19,7 +20,7 @@ export function RecommendationList({
   onStartOver,
 }: RecommendationListProps) {
   const recommendations = useQuery(api.restaurants.getRecommendations, {
-    preferenceId,
+    preferenceId: preferenceId as Id<"preferences">,
   }) as Restaurant[] | undefined;
 
   if (recommendations === undefined) {

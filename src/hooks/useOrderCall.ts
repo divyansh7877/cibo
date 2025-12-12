@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { initiateOrderCall } from "../lib/n8n";
 import type { Restaurant } from "../types";
 
@@ -23,7 +24,11 @@ export function useOrderCall() {
     setIsInitiating(true);
     setError(null);
     try {
-      const orderId = await createOrder({ userId, restaurantId: restaurant._id, preferenceId });
+      const orderId = await createOrder({
+        userId: userId as Id<"users">,
+        restaurantId: restaurant._id as Id<"restaurants">,
+        preferenceId: preferenceId as Id<"preferences">,
+      });
       await updateOrderStatus({ orderId, status: "calling" });
       const response = await initiateOrderCall({
         agentId: import.meta.env.VITE_ELEVENLABS_AGENT_ID || "",

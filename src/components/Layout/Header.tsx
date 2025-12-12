@@ -9,7 +9,7 @@ export function Header() {
           <div className="p-2 bg-gradient-accent rounded-lg shadow-warm">
             <UtensilsCrossed className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-slate-800">FoodAgent</span>
+          <span className="text-xl font-bold text-slate-800">Cibo</span>
         </div>
         <UserButton afterSignOutUrl="/" />
       </div>
