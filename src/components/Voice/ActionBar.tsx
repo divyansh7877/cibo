@@ -21,54 +21,41 @@ export function ActionBar({ voiceState, onToggleVoice, onBrowse, error }: Action
             <p className="text-xs sm:text-sm text-rose-600 text-center">{error}</p>
           </div>
         )}
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-200/80 p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-4">
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl border border-slate-200/80 p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3">
           <button
             onClick={onToggleVoice}
             disabled={isProcessing}
             className={cn(
-              "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-3 sm:py-3.5 px-3 sm:px-4 rounded-xl transition-all duration-200 ease-in-out",
-              isListening
-                ? "bg-rose-100 text-rose-700 hover:bg-rose-200"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              "relative flex-1 flex items-center justify-center gap-2 sm:gap-2.5 py-3.5 sm:py-4 px-4 sm:px-6 rounded-xl font-medium transition-all duration-200 ease-in-out",
+              isListening && "bg-gradient-accent text-white shadow-lg animate-pulse-glow",
+              isProcessing && "bg-slate-200 text-slate-500 cursor-not-allowed",
+              voiceState === "idle" && "bg-slate-100 text-slate-700 hover:bg-slate-200"
             )}
           >
-            {isListening ? (
+            {isProcessing ? (
               <>
-                <MicOff className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-xs sm:text-sm font-medium">Mute</span>
+                <Loader2 className="w-5 h-5 sm:w-5 sm:h-5 animate-spin" />
+                <span className="text-sm sm:text-base">Processing...</span>
+              </>
+            ) : isListening ? (
+              <>
+                <MicOff className="w-5 h-5 sm:w-5 sm:h-5" />
+                <span className="text-sm sm:text-base">Stop</span>
               </>
             ) : (
               <>
-                <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-xs sm:text-sm font-medium">Speak</span>
+                <Mic className="w-5 h-5 sm:w-5 sm:h-5" />
+                <span className="text-sm sm:text-base">Speak</span>
               </>
             )}
           </button>
 
-          <div className="relative shrink-0">
-            {isListening && (
-              <div className="absolute inset-0 rounded-full bg-rose-400 animate-ping opacity-30" />
-            )}
-            <div
-              className={cn(
-                "relative w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-200",
-                voiceState === "idle" && "bg-gradient-accent",
-                isListening && "bg-rose-500 scale-110",
-                isProcessing && "bg-slate-400"
-              )}
-            >
-              {voiceState === "idle" && <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-white" />}
-              {isListening && <Mic className="w-5 h-5 sm:w-6 sm:h-6 text-white animate-pulse" />}
-              {isProcessing && <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-white animate-spin" />}
-            </div>
-          </div>
-
           <button
             onClick={onBrowse}
-            className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-3 sm:py-3.5 px-3 sm:px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all duration-200 ease-in-out"
+            className="flex-1 flex items-center justify-center gap-2 sm:gap-2.5 py-3.5 sm:py-4 px-4 sm:px-6 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-all duration-200 ease-in-out"
           >
-            <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="text-xs sm:text-sm font-medium">Results</span>
+            <Search className="w-5 h-5 sm:w-5 sm:h-5" />
+            <span className="text-sm sm:text-base">Results</span>
           </button>
         </div>
       </div>
