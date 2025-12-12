@@ -24,9 +24,9 @@ export function RecommendationList({
 
   if (recommendations === undefined) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+      <div className="bg-gradient-card rounded-xl shadow-card border border-slate-200 p-8">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-500" />
         </div>
       </div>
     );
@@ -34,8 +34,8 @@ export function RecommendationList({
 
   if (recommendations.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
-        <p className="text-gray-600 mb-4">
+      <div className="bg-gradient-card rounded-xl shadow-card border border-slate-200 p-8 text-center">
+        <p className="text-slate-600 mb-4">
           No restaurants found matching your preferences.
         </p>
         <Button variant="secondary" onClick={onStartOver}>
@@ -47,7 +47,7 @@ export function RecommendationList({
 
   return (
     <div>
-      <p className="text-gray-600 mb-4">
+      <p className="text-slate-600 mb-4 font-medium">
         Based on your preferences, here are my top picks:
       </p>
 
