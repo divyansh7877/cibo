@@ -8,3 +8,40 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@layer utilities {
+  .bg-gradient-warm {
+    background: linear-gradient(135deg, #fef7f0 0%, #f1f5f9 50%, #f0f9ff 100%);
+  }
+
+  .bg-gradient-card {
+    background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+  }
+
+  .bg-gradient-accent {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
+  }
+
+  .shadow-warm {
+    box-shadow: 0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -2px rgba(249, 115, 22, 0.1);
+  }
+
+  .shadow-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .ring-glow {
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15), 0 0 20px rgba(249, 115, 22, 0.2);
+  }
+}
+
+* {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+*:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+}

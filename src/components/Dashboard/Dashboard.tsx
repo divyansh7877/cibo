@@ -62,11 +62,11 @@ export function Dashboard() {
   };
 
   if (isUserLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500" /></div>;
+    return <div className="min-h-screen bg-gradient-warm flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-500" /></div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-warm flex flex-col">
       <Header />
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8">
         <AgentStatusPanel currentPhase={phase} />

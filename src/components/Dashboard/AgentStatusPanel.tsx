@@ -20,7 +20,7 @@ export function AgentStatusPanel({ currentPhase }: { currentPhase: Phase }) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <div className="bg-gradient-card rounded-xl shadow-card border border-slate-200 p-6 mb-6">
       <div className="flex items-center justify-between">
         {steps.map((step, i) => {
           const status = getStatus(step.id);
@@ -29,22 +29,22 @@ export function AgentStatusPanel({ currentPhase }: { currentPhase: Phase }) {
             <div key={step.id} className="flex items-center">
               <div className="flex flex-col items-center">
                 <div className={cn(
-                  "w-10 h-10 rounded-full flex items-center justify-center transition-all",
-                  status === "complete" && "bg-green-500 text-white",
-                  status === "active" && "bg-primary-500 text-white animate-pulse-ring",
-                  status === "pending" && "bg-gray-200 text-gray-400"
+                  "w-12 h-12 rounded-full flex items-center justify-center shadow-sm",
+                  status === "complete" && "bg-emerald-500 text-white shadow-emerald-200",
+                  status === "active" && "bg-gradient-accent text-white ring-glow",
+                  status === "pending" && "bg-slate-100 text-slate-500 border-2 border-slate-200"
                 )}>
                   {status === "complete" ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                 </div>
-                <span className={cn("mt-2 text-sm font-medium",
-                  status === "active" && "text-primary-600",
-                  status === "complete" && "text-green-600",
-                  status === "pending" && "text-gray-400"
+                <span className={cn("mt-3 text-sm font-semibold tracking-wide",
+                  status === "active" && "text-accent-600",
+                  status === "complete" && "text-emerald-600",
+                  status === "pending" && "text-slate-500"
                 )}>{step.label}</span>
               </div>
               {i < steps.length - 1 && (
-                <div className={cn("w-16 md:w-24 h-0.5 mx-2 md:mx-4 transition-colors",
-                  getStatus(steps[i + 1].id) !== "pending" ? "bg-green-500" : "bg-gray-200"
+                <div className={cn("w-16 md:w-24 h-1 mx-2 md:mx-4 rounded-full",
+                  getStatus(steps[i + 1].id) !== "pending" ? "bg-emerald-400" : "bg-slate-200"
                 )} />
               )}
             </div>
