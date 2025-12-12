@@ -87,7 +87,7 @@ export function RecommendationList({
         {recommendations.map((restaurant: Restaurant, index: number) => (
           <div
             key={restaurant._id}
-            className={`transform transition-all duration-500 ease-out ${
+            className={`transform transition-all duration-500 ease-in-out ${
               visibleCards.includes(index)
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
