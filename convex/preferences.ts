@@ -34,3 +34,58 @@ export const getPreferencesBySession = query({
       .first();
   },
 });
+
+export const seedPreferences = mutation({
+  handler: async (ctx) => {
+    const existing = await ctx.db.query("preferences").first();
+    if (existing) return { message: "Preferences already seeded" };
+
+    const users = await ctx.db.query("users").collect();
+    if (users.length === 0) return { message: "No users found. Create a user first." };
+
+    const samplePreferences = [
+      {
+        userId: users[0]._id,
+        sessionId: `session_${Date.now()}_1`,
+        cuisine: ["Thai", "Vietnamese"],
+        budget: "medium",
+        dietaryRestrictions: ["vegetarian"],
+        groupSize: 2,
+        spiceLevel: "medium",
+        occasion: "casual dinner",
+        location: "Manhattan",
+        createdAt: Date.now() - 86400000,
+      },
+      {
+        userId: users[0]._id,
+        sessionId: `session_${Date.now()}_2`,
+        cuisine: ["Italian", "Pizza"],
+        budget: "low",
+        dietaryRestrictions: [],
+        groupSize: 4,
+        spiceLevel: "mild",
+        occasion: "family meal",
+        location: "Brooklyn",
+        createdAt: Date.now() - 172800000,
+      },
+      {
+        userId: users[0]._id,
+        sessionId: `session_${Date.now()}_3`,
+        cuisine: ["Indian", "Chinese"],
+        budget: "high",
+        dietaryRestrictions: ["vegan"],
+        groupSize: 3,
+        spiceLevel: "hot",
+        occasion: "celebration",
+        location: "Queens",
+        createdAt: Date.now() - 259200000,
+      },
+    ];
+
+    for (const pref of samplePreferences) {
+      await ctx.db.insert("preferences", pref);
+    }
+
+    return { message: `Seeded ${samplePreferences.length} preferences` };
+  },
+});
