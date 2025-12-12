@@ -36,12 +36,27 @@ export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseV
       const conversation = await Conversation.startSession({
         agentId,
         connectionType: "websocket",
-        onConnect: () => setVoiceState("listening"),
-        onDisconnect: () => { setVoiceState("idle"); conversationRef.current = null; },
+        onConnect: () => {
+          console.log("ElevenLabs connected");
+          setVoiceState("listening");
+        },
+        onDisconnect: (details) => {
+          console.log("ElevenLabs disconnected:", details);
+          setVoiceState("idle");
+          conversationRef.current = null;
+        },
+        onError: (message, context) => {
+          console.error("ElevenLabs error:", message, context);
+          setError(message);
+        },
         onMessage: (msg) => {
+          console.log("ElevenLabs message:", msg);
           if (msg.source === "ai" || msg.source === "user") {
             addTranscriptMessage(msg.source, msg.message);
           }
+        },
+        onModeChange: (prop) => {
+          console.log("ElevenLabs mode:", prop.mode);
         },
         clientTools: {
           save_preferences: async (params: SavePreferencesParams) => {

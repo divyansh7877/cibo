@@ -8,16 +8,6 @@ export interface SavePreferencesParams {
   location?: string;
 }
 
-declare global {
-  interface Window {
-    ElevenLabs?: {
-      Conversation: {
-        startSession: (config: any) => Promise<{ endSession: () => Promise<void> }>;
-      };
-    };
-  }
-}
-
 export function getAgentId(): string {
   return import.meta.env.VITE_ELEVENLABS_AGENT_ID || "";
 }
