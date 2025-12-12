@@ -11,6 +11,26 @@ interface UseVoiceAgentProps {
   onPreferencesComplete: (preferenceId: string) => void;
 }
 
+function waitForElevenLabs(timeout = 5000): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (window.ElevenLabs) {
+      resolve();
+      return;
+    }
+    const start = Date.now();
+    const check = () => {
+      if (window.ElevenLabs) {
+        resolve();
+      } else if (Date.now() - start > timeout) {
+        reject(new Error("ElevenLabs SDK failed to load"));
+      } else {
+        setTimeout(check, 100);
+      }
+    };
+    check();
+  });
+}
+
 export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseVoiceAgentProps) {
   const [voiceState, setVoiceState] = useState<VoiceState>("idle");
   const [transcript, setTranscript] = useState<Message[]>([]);
@@ -29,11 +49,12 @@ export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseV
     if (!userId) { setError("User not authenticated"); return; }
     const agentId = getAgentId();
     if (!agentId) { setError("ElevenLabs agent not configured"); return; }
-    if (!window.ElevenLabs) { setError("ElevenLabs SDK not loaded"); return; }
     try {
-      setVoiceState("listening");
+      setVoiceState("processing");
       setError(null);
-      const conversation = await window.ElevenLabs.Conversation.startSession({
+      await waitForElevenLabs();
+      setVoiceState("listening");
+      const conversation = await window.ElevenLabs!.Conversation.startSession({
         agentId,
         onConnect: () => setVoiceState("listening"),
         onDisconnect: () => { setVoiceState("idle"); conversationRef.current = null; },
