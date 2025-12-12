@@ -31,9 +31,15 @@ def verify_deployment():
         
         found_agent = False
         for agent in agents:
+            # Debugging: print attributes of the first agent
+            # print(f"DEBUG: Agent attributes: {dir(agent)}")
+            
+            # Check for common ID fields
+            current_id = getattr(agent, 'agent_id', getattr(agent, 'id', None))
+            
             if agent.name == target_agent_name:
-                agent_id = agent.id
-                print(f"✅ Found Agent: {agent.name} (ID: {agent.id})")
+                agent_id = current_id
+                print(f"✅ Found Agent: {agent.name} (ID: {agent_id})")
                 found_agent = True
                 break
         
