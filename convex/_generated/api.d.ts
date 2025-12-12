@@ -9,6 +9,7 @@
  */
 
 import type * as conversations from "../conversations.js";
+import type * as http from "../http.js";
 import type * as orders from "../orders.js";
 import type * as preferences from "../preferences.js";
 import type * as restaurants from "../restaurants.js";
@@ -22,6 +23,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   conversations: typeof conversations;
+  http: typeof http;
   orders: typeof orders;
   preferences: typeof preferences;
   restaurants: typeof restaurants;
