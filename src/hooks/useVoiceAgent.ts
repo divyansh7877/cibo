@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { useMutation } from "convex/react";
+import { Conversation } from "@elevenlabs/client";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { getAgentId, type SavePreferencesParams } from "../lib/elevenlabs";
@@ -11,31 +12,11 @@ interface UseVoiceAgentProps {
   onPreferencesComplete: (preferenceId: string) => void;
 }
 
-function waitForElevenLabs(timeout = 5000): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (window.ElevenLabs) {
-      resolve();
-      return;
-    }
-    const start = Date.now();
-    const check = () => {
-      if (window.ElevenLabs) {
-        resolve();
-      } else if (Date.now() - start > timeout) {
-        reject(new Error("ElevenLabs SDK failed to load"));
-      } else {
-        setTimeout(check, 100);
-      }
-    };
-    check();
-  });
-}
-
 export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseVoiceAgentProps) {
   const [voiceState, setVoiceState] = useState<VoiceState>("idle");
   const [transcript, setTranscript] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const conversationRef = useRef<{ endSession: () => Promise<void> } | null>(null);
+  const conversationRef = useRef<Conversation | null>(null);
   const addMessage = useMutation(api.conversations.addMessage);
   const savePreferences = useMutation(api.preferences.savePreferences);
 
@@ -52,27 +33,30 @@ export function useVoiceAgent({ sessionId, userId, onPreferencesComplete }: UseV
     try {
       setVoiceState("processing");
       setError(null);
-      await waitForElevenLabs();
-      setVoiceState("listening");
-      const conversation = await window.ElevenLabs!.Conversation.startSession({
+      const conversation = await Conversation.startSession({
         agentId,
+        connectionType: "websocket",
         onConnect: () => setVoiceState("listening"),
         onDisconnect: () => { setVoiceState("idle"); conversationRef.current = null; },
-        onMessage: (msg: any) => addTranscriptMessage(msg.role, msg.content),
-        onToolCall: async (toolName: string, params: any) => {
-          if (toolName === "save_preferences") {
+        onMessage: (msg) => {
+          if (msg.source === "ai" || msg.source === "user") {
+            addTranscriptMessage(msg.source, msg.message);
+          }
+        },
+        clientTools: {
+          save_preferences: async (params: SavePreferencesParams) => {
             const preferenceId = await savePreferences({
               userId: userId as Id<"users">,
               sessionId,
-              preferences: params as SavePreferencesParams,
+              preferences: params,
             });
             onPreferencesComplete(String(preferenceId));
-            return { preferenceId };
-          }
-          return {};
+            return JSON.stringify({ preferenceId });
+          },
         },
       });
       conversationRef.current = conversation;
+      setVoiceState("listening");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start conversation");
       setVoiceState("idle");
